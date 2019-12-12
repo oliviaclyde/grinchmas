@@ -7,9 +7,10 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/manifoldco/promptui"
-	"github.com/oliviaclyde/grinchmas/grinchmas"
-	"github.com/oliviaclyde/grinchmas/storage"
+	"github.com/oliviaclyde/grinchmas/db"
+	"github.com/oliviaclyde/grinchmas/grinchmasconnect"
 )
 
 const (
@@ -18,10 +19,17 @@ const (
 	viewEventListCmd  = "View Your List of Events"
 )
 
+var grinchmasService *GrinchmasService
+
 func main() {
 
-	// Add in storage load function
-	storage.Load()
+	db, err := db.ConnectDatabase("grinchmas_db.config")
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
+
+	grinchmasService = grinchmasconnect.NewService(db)
 
 	for {
 		fmt.Println(`Welcome to GRINCHMAS!!!! 
@@ -54,13 +62,6 @@ func main() {
 				return
 			}
 
-			// This will save each event we add as a JSON object
-			err = storage.Save()
-			if err != nil {
-				fmt.Println("Prompt failed %v\n", err)
-				return
-			}
-
 		case generateExcuseCmd:
 			err := generateExcusePrompt()
 			if err != nil {
@@ -81,7 +82,7 @@ func main() {
 }
 
 func viewEventListPrompt() error {
-	listOfEvents := grinchmas.ListEvents()
+	listOfEvents := grinchmasService.ListEvents()
 
 	if len(listOfEvents) == 0 {
 		fmt.Println("You need to add a horrible event you don't want to attend first")
@@ -103,11 +104,11 @@ func addEventPrompt() error {
 		return err
 	}
 
-	newEvent := grinchmas.Event{
+	newEvent := grinchmasService.Event{
 		Description: description,
 	}
 
-	grinchmas.AddEvent(newEvent)
+	grinchmasService.AddEvent(newEvent)
 
 	fmt.Println("Event added", description)
 
@@ -116,7 +117,7 @@ func addEventPrompt() error {
 }
 
 func generateExcusePrompt() error {
-	listOfEvents := grinchmas.ListEvents()
+	listOfEvents := grinchmasService.ListEvents()
 
 	if len(listOfEvents) == 0 {
 		fmt.Println("You need to add a horrible event you don't want to attend first")
@@ -124,9 +125,9 @@ func generateExcusePrompt() error {
 
 	}
 
-	MissedEvent := grinchmas.PickEvent()
+	MissedEvent := grinchmasService.PickEvent()
 
-	Who, Reason := grinchmas.GetExcuse()
+	Who, Reason := grinchmasService.GetExcuse()
 	// Who := grinchmas.PickActor()
 
 	fmt.Println("I'm terribly sorry I won't be able to " + MissedEvent.Description + ". My " + Who + " said I " + Reason)
