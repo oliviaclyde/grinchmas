@@ -1,5 +1,3 @@
-// This is the file to run the grinchmas api
-
 package main
 
 import (
@@ -19,7 +17,7 @@ const (
 	viewEventListCmd  = "View Your List of Events"
 )
 
-var grinchmasService *GrinchmasService
+var grinchmasService *grinchmasconnect.GrinchmasService
 
 func main() {
 
@@ -82,7 +80,7 @@ func main() {
 }
 
 func viewEventListPrompt() error {
-	listOfEvents := grinchmasService.ListEvents()
+	listOfEvents, _ := grinchmasService.ListEvent()
 
 	if len(listOfEvents) == 0 {
 		fmt.Println("You need to add a horrible event you don't want to attend first")
@@ -104,7 +102,7 @@ func addEventPrompt() error {
 		return err
 	}
 
-	newEvent := grinchmasService.Event{
+	newEvent := grinchmasconnect.Event{
 		Description: description,
 	}
 
@@ -117,7 +115,7 @@ func addEventPrompt() error {
 }
 
 func generateExcusePrompt() error {
-	listOfEvents := grinchmasService.ListEvents()
+	listOfEvents, _ := grinchmasService.ListEvent()
 
 	if len(listOfEvents) == 0 {
 		fmt.Println("You need to add a horrible event you don't want to attend first")

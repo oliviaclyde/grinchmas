@@ -59,7 +59,7 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func GetExcuse() (string, string) {
+func (a *GrinchmasService) GetExcuse() (string, string) {
 
 	Actor := []string{"dog", "boss", "insurance company", "in-laws", "stalker"}
 	Action := []string{"forgot to pay them the annual premium", "have to submit to a polygraph", "need to be alone in a dark alley", "need to scoop their poop", "need to give them grandchildren"}
@@ -72,7 +72,7 @@ func GetExcuse() (string, string) {
 
 func (a *GrinchmasService) PickEvent() Event {
 
-	events := a.ListEvent()
+	events, _ := a.ListEvent()
 
 	eventNumber := rand.Intn(len(events))
 
