@@ -134,19 +134,3 @@ func generateExcusePrompt() error {
 	return nil
 
 }
-
-// func promptForNumber(label string) (float64, error) {
-// numberPrompt := promptui.Prompt{
-// Label: label,
-// // Could add in a validate so you can make sure a number is entered
-// }
-// numberStr, err := numberPrompt.Run()
-// if err != nil {
-// return 0, err
-// }
-// number, err := strconv.ParseFloat(numberStr, 64)
-// if err != nil {
-// return 0, err
-// }
-// return number, nil
-// }
